@@ -38,6 +38,18 @@ use Magento\Store\Model\StoreManagerInterface;
 class Config
 {
     /**
+     * Product tax attribute code config path
+     *
+     * @var string PRODUCT_TAX_CLASS_PER_PRODUCT_ATTR
+     */
+    public const PRODUCT_TAX_CLASS_PER_PRODUCT_ATTR = 'akeneo_connector/product/tax_class_per_product_attr';
+    /**
+     * Product tax class config path
+     *
+     * @var string PRODUCT_TAX_CLASS_PER_PRODUCT
+     */
+    public const PRODUCT_TAX_CLASS_PER_PRODUCT = 'akeneo_connector/product/tax_class_per_product';
+    /**
      * API URL config path
      *
      * @var string AKENEO_API_BASE_URL
@@ -1184,6 +1196,58 @@ class Config
     public function getDefaultConfigurableProductStatus()
     {
         return $this->scopeConfig->getValue(self::DEFAULT_CONFIGURABLE_PRODUCT_STATUS);
+    }
+
+    /**
+     * Retrieve tax per product Akeneo attribute code
+     *
+     * @return string
+     */
+    public function getProductTaxClassesPerProductAttributeCode() : string
+    {
+        /** @var string $classes */
+        $attrCode = $this->scopeConfig->getValue(self::PRODUCT_TAX_CLASS_PER_PRODUCT_ATTR);
+        if (!$attrCode) {
+            return '';
+        }
+
+        return $attrCode;
+    }
+
+    /**
+     * Retrieve tax class per product
+     *
+     * @return array
+     */
+    public function getProductTaxClassesPerProduct(): array
+    {
+        /** @var mixed[] $result */
+        $result = [];
+
+        /** @var string $classes */
+        $classes = $this->scopeConfig->getValue(self::PRODUCT_TAX_CLASS_PER_PRODUCT);
+        if (!$classes) {
+            return $result;
+        }
+        /** @var mixed[] $classes */
+        $classes = $this->jsonSerializer->unserialize($classes);
+        if (!is_array($classes)) {
+                return $result;
+        }
+
+        /** @var mixed[] $class */
+        foreach ($classes as $class) {
+                if (!isset($class['akeneo_code'])) {
+                        continue;
+            }
+            if (!isset($class['tax_class'])) {
+                        continue;
+            }
+
+            $result[$class['akeneo_code']] = $class['tax_class'];
+        }
+
+        return $result;
     }
 
     /**

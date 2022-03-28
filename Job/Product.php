@@ -986,6 +986,20 @@ class Product extends JobImport
                 ['_type_id = ?' => 'simple']
             );
         }
+        
+        $taxClassPerProductConfigAttr = $this->configHelper->getProductTaxClassesPerProductAttributeCode();
+        $taxClassPerProductConfig = $this->configHelper->getProductTaxClassesPerProduct();
+        if (!empty($taxClassPerProductConfigAttr)) {
+            if ($connection->tableColumnExists($tmpTable, $taxClassPerProductConfigAttr)) {
+                foreach ($taxClassPerProductConfig as $akeneoTaxId => $magentoTaxId) {
+                    $connection->update(
+                        $tmpTable,
+                        ['_tax_class_id' => new Expr($magentoTaxId)],
+                        ["$taxClassPerProductConfigAttr = ?" => $akeneoTaxId]
+                    );
+                }
+            }
+        }
 
         /** @var string|array $matches */
         $matches = $this->configHelper->getAttributeMapping();
@@ -2001,11 +2015,15 @@ class Product extends JobImport
             ['_is_new = ?' => 1, '_type_id = ?' => 'configurable']
         );
 
-        /** @var mixed[] $taxClasses */
-        $taxClasses = $this->configHelper->getProductTaxClasses();
-        if (count($taxClasses)) {
-            foreach ($taxClasses as $storeId => $taxClassId) {
-                $values[$storeId]['tax_class_id'] = new Expr($taxClassId);
+        $taxClassPerProductAttrCode = $this->configHelper->getProductTaxClassesPerProductAttributeCode();
+        $taxClassPerProductConfig = $this->configHelper->getProductTaxClassesPerProduct();
+        if (empty($taxClassPerProductAttrCode) || empty($taxClassPerProductConfig)) {
+            /** @var mixed[] $taxClasses */
+            $taxClasses = $this->configHelper->getProductTaxClasses();
+            if (count($taxClasses)) {
+                foreach ($taxClasses as $storeId => $taxClassId) {
+                    $values[$storeId]['tax_class_id'] = new Expr($taxClassId);
+                }
             }
         }
 

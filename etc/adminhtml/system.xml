@@ -450,7 +450,17 @@ For example :<br/>
                     <label>Default Tax Class</label>
                     <frontend_model>Akeneo\Connector\Block\Adminhtml\System\Config\Form\Field\Tax</frontend_model>
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
-                    <comment>Set up default tax class for website</comment>
+                    <comment>Set up default tax class for website, This is not used when 'Default Tax Class Field Matching' is set</comment>
+                </field>
+                <field id="tax_class_per_product_attr" translate="label" type="text" sortOrder="46" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Akeneo Attribute</label>
+                    <comment>Akeneo tax class attribute code</comment>
+                </field>
+                <field id="tax_class_per_product" translate="label" type="text" sortOrder="47" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Default Tax Class Field Matching</label>
+                        <frontend_model>Akeneo\Connector\Block\Adminhtml\System\Config\Form\Field\TaxPerProduct</frontend_model>
+                        <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                        <comment>Set up tax class matching with akeneo</comment>
                 </field>
                 <field id="configurable_attributes" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Configurable</label>
